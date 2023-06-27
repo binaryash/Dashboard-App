@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block feed_body %}
+<body>
+    <div class="container">
+        <h1 style="text-align: center; font-size:40px; padding-bottom: 20px;" class="text-center">Incomplete Tasks</h1>
+
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Task no</th>
+                    <th>Added</th>
+                    <th>Creation Date</th>
+                    <th>Completion Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.content }}</td>
+                        <td>{{ task.date_created.date() }}</td>
+                        <td>
+                            {% if task.completion_date %}
+                                {{ task.completion_date.strftime("%Y-%m-%d") }}
+                            {% else %}
+                                Not completed
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if task.completion_time %}
+                                {{ task.completion_time.date() }}
+                            {% else %}
+                                Not completed
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="/delete/{{ task.id }}" class="btn btn-sm btn-danger">Delete</a>
+                                <a href="/update/{{ task.id }}" class="btn btn-sm btn-primary">Update</a>
+                                {% if not task.completion_time %}
+                                    <a href="/complete/{{ task.id }}" class="btn btn-sm btn-success">Complete</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form action="/index" method="POST">
+            <div class="input-group mb-3">
+                <input type="text" name="content" id="content" class="form-control" placeholder="Add Task" required>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-success">Add Task</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

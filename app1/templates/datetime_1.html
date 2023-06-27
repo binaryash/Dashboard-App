@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block feed_body %}
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='wallpaper2.jpg') }}");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .box {
+        border: 2px solid black;
+        padding: 10px;
+        width: max-content;
+        margin: 0 auto;
+        background-color: rgba(0, 0, 0, 0.7); /* Adjust the alpha value (0.7) to control the translucency */
+    }
+</style>
+
+<body>
+    <h1 style="font-size:40px;" class="Date1">Current Date and Time</h1>
+    <div class="box">
+        <p style="font-size:30px;" class="Date2">
+            {{ current_datetime }}
+        </p>
+    </div>
+</body>
+{% endblock %}

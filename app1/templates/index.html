@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block feed_body %}
+<html>
+<head>
+    <title>Notes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .note {
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        .small-input {
+            max-width: 100px;
+        }
+        .small-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .small-form {
+            margin-bottom: 0.5rem;
+        }
+        .left-column {
+            flex: 0 0 30%;
+        }
+        .right-column {
+            flex: 0 0 70%;
+            max-height: 80vh;
+            overflow: auto;
+        }
+        .note-buttons {
+            display: flex;
+            flex-direction: row;
+        }
+        .note-buttons .btn {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 left-column">
+                <div class="p-4">
+                    <h1 class="h2 mb-4">View Notes</h1>
+                    <form action="/view_notes" method="post" class="small-form">
+                        <div class="mb-3">
+                            <label for="year" class="form-label">Year:</label>
+                            <input type="number" name="year" required class="form-control small-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="month" class="form-label">Month:</label>
+                            <input type="number" name="month" required class="form-control small-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="day" class="form-label">Day:</label>
+                            <input type="number" name="day" required class="form-control small-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary small-btn">View</button>
+                    </form>
+
+                    <h1 class="h2 mt-4">Create Note</h1>
+                    <form action="/create_note" method="post" class="small-form">
+                        <div class="mb-3">
+                            <label for="year" class="form-label">Year:</label>
+                            <input type="number" name="year" required class="form-control small-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="month" class="form-label">Month:</label>
+                            <input type="number" name="month" required class="form-control small-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="day" class="form-label">Day:</label>
+                            <input type="number" name="day" required class="form-control small-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Note:</label>
+                            <textarea name="note" rows="2" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary small-btn">Create</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-8 right-column">
+                <div class="p-4">
+                    <h1 class="h2 mb-4">Notes:</h1>
+
+                    {% if message %}
+                    <p class="mt-4">{{ message }}</p>
+                    {% endif %}
+
+                    {% if notes %}
+                    {% for note in notes %}
+                    <div class="note p-2 rounded">
+                        {{ note.note }}
+                        <div class="note-buttons">
+                            <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-outline-primary btn-sm small-btn">Edit</a>
+                            <a href="{{ url_for('delete_note', note_id=note.id) }}" class="btn btn-outline-danger btn-sm small-btn">Delete</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
