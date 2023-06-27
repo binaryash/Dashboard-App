@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html data-bs-theme="dark">
+
+<head>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Pathway+Extreme&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <!-- Navbar -->
+
+    <nav class="navbar bg-dark border-bottom border-bottom-dark" data-bs-theme="dark">
+        <div class="container">
+          <a class="navbar-brand" href="{{ url_for('home') }}">DashBoard</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('home') }}">HOME</a>
+                  <a class="nav-link active" href="{{ url_for('feeds') }}">NEWS</a>
+                  <a class="nav-link active" href="{{ url_for('incomplete') }}">TODO</a>
+                  <a class="nav-link active" href="{{ url_for('noteindex') }}">NOTES</a>
+                  <a class="nav-link active" href="{{ url_for('event_home') }}">EVENTS</a>
+              </li>
+                                  <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            OTHER
+          </a>
+                <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('datetime') }}">DATE</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('index') }}">ALL TODO</a></li>
+          </ul>
+                </li>
+              <li class="nav-item">
+                  <button class="btn btn-outline-success me-2" type="button" id="btnSwitch" >Toggle Theme</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Navbar End -->
+    <!-- Script start -->
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('btnSwitch').addEventListener('click', () => {
+      if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+      }
+    });
+  </script>
+    <!-- Script End -->
+
+
+    <div class="feed_body1">
+        <div class="feed_body">
+            {% block feed_body %}
+
+            {% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+
+</html>

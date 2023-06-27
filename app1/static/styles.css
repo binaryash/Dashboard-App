@@ -1,0 +1,138 @@
+.feed_entry1 {
+  border-radius: 8px;
+  padding: 20px;
+  padding-right: 10%;
+  padding-left: 10%;
+}
+
+.feed_entry1 h2 {
+  font-size: 24px; /* Adjust the font size as desired */
+}
+
+.feed_entry1 p {
+}
+
+.feed_title {
+  margin-top: 2%;
+  text-align: center;
+}
+
+.Date1 {
+  border-radius: 8px;
+  padding: 30px;
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.Date2 {
+  border-radius: 8px;
+  padding: 20px;
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.unordered-list {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.list-item {
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 10px;
+}
+
+.ordered-list {
+  font-family: 'Montserrat', sans-serif;
+  list-style-type: decimal;
+  margin-left: 20px;
+}
+
+
+/* Heading styles */
+h1.note_main,
+h2.note_main,
+h3.note_main,
+h4.note_main {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Emphasized text styles */
+em.emphasized-text {
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+}
+
+/* Paragraph styles */
+p.paragraph {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  line-height: 1.5;
+   margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Code block styles */
+pre.code-block {
+  background-color: #EDEEEE;
+  color: #000;
+  padding: 10px;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+code.code {
+  font-size: 20px;
+  font-family: 'Open Sans', sans-serif;
+  font-family: 'Pathway Extreme', sans-serif;
+  font-family: 'Space Mono', monospace;
+}
+
+/* List styles */
+ol.ordered-list,
+ul.unordered-list {
+  list-style: none;
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+li.list-item {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.note_body {
+  padding-right: 50px;
+  padding-left: 50px;
+}
+
+.home_button{
+  padding-top: 30px;
+  padding-bottom: 50px;
+}
+
+.home_date{
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.home_title{
+  font-size: 50px;
+  padding-top: 50px;
+  padding-bottom: 30px;
+}
+
+.lead{
+  font-size: 35px;
+}
