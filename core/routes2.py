@@ -1,7 +1,7 @@
 import os
 import markdown
 from flask import Flask, render_template, send_from_directory
-from app1 import app
+from core import app
 
 def apply_list_styling(html):
     # Apply styling to headings
