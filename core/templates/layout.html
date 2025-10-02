@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html data-bs-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Keep local styles if needed -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Shadcn-like neutral palette and dark mode support via class or data attribute
+    tailwind.config = {
+      darkMode: ['class', '[data-bs-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            border: '#e4e4e7',         // zinc-200
+            bgCard: '#ffffff',         // white
+            bgSoft: '#f8fafc',         // slate-50
+            fgMuted: '#71717a',        // zinc-500
+            fg: '#18181b',             // zinc-900
+          },
+          ringColor: ({ theme }) => ({
+            DEFAULT: theme('colors.zinc.400'),
+          }),
+          boxShadow: {
+            subtle: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 1px -1px rgb(0 0 0 / 0.08)',
+          },
+          transitionTimingFunction: {
+            smooth: 'cubic-bezier(.2,.8,.2,1)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@300&family=Pathway+Extreme&family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:border-zinc-800/70 dark:bg-zinc-950/50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-14 items-center justify-between">
+        <!-- Brand -->
+        <a href="{{ url_for('home') }}" class="text-[15px] font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          DashBoard
+        </a>
+
+        <!-- Desktop nav -->
+        <ul class="hidden items-center gap-5 md:flex">
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('home') }}">HOME</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('feeds') }}">NEWS</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('incomplete') }}">TODO</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('noteindex') }}">NOTES</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('event_home') }}">EVENTS</a></li>
+
+          <!-- Dropdown -->
+          <li class="relative">
+            <button type="button" id="otherTrigger"
+              class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors"
+              aria-haspopup="menu" aria-expanded="false">
+              OTHER
+              <svg class="h-4 w-4 opacity-70" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <ul id="otherMenu"
+                class="pointer-events-none invisible absolute right-0 z-50 mt-2 w-44 translate-y-1 overflow-hidden rounded-md border border-zinc-200 bg-white p-1 text-sm text-zinc-700 opacity-0 shadow-subtle ring-1 ring-black/5 transition-all duration-150 ease-smooth dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+                role="menu" aria-label="Other">
+              <li><a class="block rounded-[6px] px-2.5 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" href="{{ url_for('datetime') }}">DATE</a></li>
+              <li><a class="block rounded-[6px] px-2.5 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800" href="{{ url_for('index') }}">ALL TODO</a></li>
+            </ul>
+          </li>
+
+          <!-- Theme toggle -->
+          <li>
+            <button class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-subtle hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              type="button" id="btnSwitch">
+              Toggle Theme
+            </button>
+          </li>
+        </ul>
+
+        <!-- Mobile controls -->
+        <div class="flex items-center gap-2 md:hidden">
+          <button class="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-subtle hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  type="button" id="btnSwitchMobile">Theme</button>
+          <button id="mobileToggle" type="button" aria-controls="mobileMenu" aria-expanded="false"
+                  class="inline-flex items-center justify-center rounded-md p-2 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16m0 6H4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="hidden border-t border-zinc-200 py-3 dark:border-zinc-800 md:hidden">
+        <div class="flex flex-col gap-1">
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('home') }}">HOME</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('feeds') }}">NEWS</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('incomplete') }}">TODO</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('noteindex') }}">NOTES</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('event_home') }}">EVENTS</a>
+          <details class="group px-1">
+            <summary class="cursor-pointer list-none rounded-md px-1 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800 flex items-center justify-between">
+              OTHER
+              <span class="ml-2 transition-transform group-open:rotate-180">
+                <svg class="h-4 w-4 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
+              </span>
+            </summary>
+            <div class="mt-1 flex flex-col rounded-md border border-zinc-200 p-1 dark:border-zinc-800">
+              <a class="rounded-[6px] px-2.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800" href="{{ url_for('datetime') }}">DATE</a>
+              <a class="rounded-[6px] px-2.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800" href="{{ url_for('index') }}">ALL TODO</a>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div class="feed_body1">
+      <div class="feed_body">
+        {% block feed_body %}{% endblock %}
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactions -->
+  <script>
+    // Theme toggle: preserve data-bs-theme and also toggle Tailwind dark class
+    function toggleTheme() {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-bs-theme', next);
+      root.classList.toggle('dark', next === 'dark');
+    }
+    document.getElementById('btnSwitch')?.addEventListener('click', toggleTheme);
+    document.getElementById('btnSwitchMobile')?.addEventListener('click', toggleTheme);
+
+    // Desktop dropdown (Other) — shadcn-like popover behavior
+    const trigger = document.getElementById('otherTrigger');
+    const menu = document.getElementById('otherMenu');
+    function openMenu() {
+      if (!menu) return;
+      menu.classList.remove('invisible');
+      menu.classList.remove('opacity-0');
+      menu.classList.remove('translate-y-1');
+      menu.classList.remove('pointer-events-none');
+      trigger?.setAttribute('aria-expanded', 'true');
+    }
+    function closeMenu() {
+      if (!menu) return;
+      menu.classList.add('invisible');
+      menu.classList.add('opacity-0');
+      menu.classList.add('translate-y-1');
+      menu.classList.add('pointer-events-none');
+      trigger?.setAttribute('aria-expanded', 'false');
+    }
+    let opened = false;
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      opened ? closeMenu() : openMenu();
+      opened = !opened;
+    });
+    document.addEventListener('click', (e) => {
+      if (!trigger || !menu) return;
+      if (!trigger.contains(e.target) && !menu.contains(e.target) && opened) {
+        closeMenu();
+        opened = false;
+      }
+    });
+
+    // Mobile menu
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle?.addEventListener('click', () => {
+      const hidden = mobileMenu?.classList.toggle('hidden');
+      mobileToggle?.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+    });
+  </script>
+</body>
+</html>
