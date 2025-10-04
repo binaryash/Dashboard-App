@@ -2,79 +2,104 @@
 
 {% block feed_body %}
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-  <!-- Page header / toolbar -->
-  <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h1 class="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Task Master</h1>
-      <p class="text-xs text-zinc-500 dark:text-zinc-400">Overview of tasks and statuses</p>
-    </div>
-    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-      <!-- Search (non-functional placeholder, safe to keep) -->
-      <div class="relative w-full sm:w-64">
-        <input type="search" placeholder="Search tasks…" class="w-full rounded-md border border-zinc-300 bg-white pl-9 pr-3 py-2 text-sm shadow-sm outline-none placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
-        <svg class="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-zinc-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M13.5 12a5.5 5.5 0 10-1.5 1.5l3.25 3.25a1 1 0 001.5-1.5L13.5 12zm-4 0a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" clip-rule="evenodd"/></svg>
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">Task Master</h1>
+    <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Manage your tasks efficiently</p>
+  </div>
+
+  <!-- Compact Filter Toolbar -->
+  <div class="mb-4 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-800/50">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <!-- Status Filter -->
+      <div x-data="{ filterStatus: 'all' }" class="relative w-full sm:w-40">
+        <select
+          id="status-filter"
+          x-model="filterStatus"
+          hx-get="/filter-tasks"
+          hx-trigger="change"
+          hx-target="#task-table-body"
+          hx-swap="innerHTML"
+          hx-include="this"
+          name="status"
+          class="w-full appearance-none rounded-md bg-white px-3 py-2 pr-8 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600">
+          <option value="all">All Tasks</option>
+          <option value="incomplete">Incomplete</option>
+          <option value="completed">Completed</option>
+        </select>
+        <svg class="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
       </div>
-      <div class="flex items-center gap-2">
-        <button type="button" class="inline-flex items-center gap-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800">
-          Filter
-        </button>
-        <button type="button" class="inline-flex items-center gap-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800">
-          Sort
-        </button>
-        <input type="date" class="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
+
+      <!-- Search -->
+      <div class="relative flex-1">
+        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="search" placeholder="Search..." class="w-full rounded-md bg-white py-2 pl-9 pr-3 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600" />
       </div>
+
+      <!-- Date -->
+      <input type="date" class="w-full rounded-md bg-white px-3 py-2 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600 sm:w-40" />
     </div>
   </div>
 
   <!-- Table -->
-  <div class="overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+  <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
     <div class="overflow-x-auto">
-      <table class="min-w-full table-auto text-sm">
-        <thead class="sticky top-0 z-10 bg-zinc-50/80 backdrop-blur dark:bg-zinc-900/70">
-          <tr class="text-left text-zinc-600 dark:text-zinc-300">
-            <th class="px-4 py-2 font-medium">Task no</th>
-            <th class="px-4 py-2 font-medium">Added</th>
-            <th class="px-4 py-2 font-medium">Creation Date</th>
-            <th class="px-4 py-2 font-medium">Completion Date</th>
-            <th class="px-4 py-2 font-medium">Status</th>
-            <th class="px-4 py-2 font-medium text-right">Actions</th>
+      <table class="min-w-full text-sm">
+        <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+          <tr class="text-left text-xs uppercase text-zinc-500 dark:text-zinc-400">
+            <th class="px-4 py-3 font-medium">#</th>
+            <th class="px-4 py-3 font-medium">Task</th>
+            <th class="hidden px-4 py-3 font-medium sm:table-cell">Created</th>
+            <th class="hidden px-4 py-3 font-medium md:table-cell">Completed</th>
+            <th class="px-4 py-3 font-medium">Status</th>
+            <th class="px-4 py-3 text-right font-medium">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+        <tbody id="task-table-body" class="divide-y divide-zinc-100 dark:divide-zinc-800">
           {% for task in tasks %}
-          <tr class="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/50">
-            <td class="px-4 py-2 text-zinc-800 dark:text-zinc-200">{{ task.id }}</td>
-            <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">
-              <span class="line-clamp-2 break-words">{{ task.content }}</span>
+          <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30">
+            <td class="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">{{ task.id }}</td>
+            <td class="px-4 py-3 text-zinc-700 dark:text-zinc-300">{{ task.content }}</td>
+            <td class="hidden px-4 py-3 text-zinc-600 dark:text-zinc-400 sm:table-cell">{{ task.date_created.date() }}</td>
+            <td class="hidden px-4 py-3 text-zinc-600 dark:text-zinc-400 md:table-cell">
+              {% if task.completion_date %}{{ task.completion_date.strftime("%Y-%m-%d") }}{% else %}—{% endif %}
             </td>
-            <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">{{ task.date_created.date() }}</td>
-            <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">
-              {% if task.completion_date %}
-                {{ task.completion_date.strftime("%Y-%m-%d") }}
-              {% else %}
-                <span class="text-zinc-500">Not completed</span>
-              {% endif %}
-            </td>
-            <td class="px-4 py-2">
+            <td class="px-4 py-3">
               {% if task.completion_time %}
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-800">Completed</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                  <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
+                  Done
+                </span>
               {% else %}
-                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-800">Pending</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+                  <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
+                  Pending
+                </span>
               {% endif %}
             </td>
-            <td class="px-4 py-2">
-              <div class="flex items-center justify-end gap-2">
-                <a href="/delete/{{task.id}}" class="inline-flex items-center rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 dark:border-red-700 dark:bg-zinc-900 dark:text-red-300 dark:hover:bg-red-900/30">
-                  Delete
-                </a>
-                <a href="/update/{{task.id}}" class="inline-flex items-center rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800">
-                  Update
-                </a>
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-end gap-1.5">
                 {% if not task.completion_time %}
-                <a href="/complete/{{task.id}}" class="inline-flex items-center rounded-md border border-emerald-300 bg-white px-2.5 py-1.5 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300 dark:hover:bg-emerald-900/30">
-                  Complete
+                <a href="/complete/{{task.id}}" class="rounded bg-emerald-50 p-1.5 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20" title="Complete">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                 </a>
                 {% endif %}
+                <a href="/update/{{task.id}}" class="rounded bg-zinc-100 p-1.5 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" title="Edit">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </a>
+                <a href="/delete/{{task.id}}" class="rounded bg-red-50 p-1.5 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20" title="Delete">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </a>
               </div>
             </td>
           </tr>
@@ -84,16 +109,18 @@
     </div>
   </div>
 
-  <!-- Add task input row -->
-  <form action="/index" method="POST" class="mt-6">
-    <div class="flex w-full items-center gap-2">
-      <input type="text" name="content" id="content" placeholder="Add Task" required
-             class="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 shadow-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
-      <button type="submit"
-              class="inline-flex items-center rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-zinc-300">
+  <!-- Add Task -->
+  <form action="/index" method="POST" class="mt-4">
+    <div class="flex gap-2">
+      <input type="text" name="content" id="content" placeholder="Add a new task..." required
+             class="flex-1 rounded-md bg-zinc-50 px-3 py-2 text-sm ring-1 ring-zinc-300 focus:bg-white focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-800 dark:ring-zinc-700 dark:focus:bg-zinc-900 dark:focus:ring-zinc-600" />
+      <button type="submit" class="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
         Add Task
       </button>
     </div>
   </form>
 </div>
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
 {% endblock %}

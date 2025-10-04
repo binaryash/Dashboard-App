@@ -13,7 +13,7 @@ def index():
         task_content = request.form['content']
         try:
             Todos.create_task(task_content)
-            return redirect('/incomplete')
+            return redirect('/index')
         except:
             return 'There was an issue with adding your task'
     else:
@@ -23,7 +23,7 @@ def index():
 @app.route('/complete/<int:id>')
 def complete(id):
     Todos.mark_task_complete(id)
-    return redirect('/incomplete')
+    return redirect('/index')
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -46,7 +46,41 @@ def update(id):
     else:
         return render_template('todo_update.html', task=task)
 
+@app.route('/filter-tasks', methods=['GET'])
+def filter_tasks():
+    """Filter tasks based on dropdown selection"""
+    status = request.args.get('status', 'all')
+
+    if status == 'incomplete':
+        tasks = Todos.get_incomplete_tasks()
+    elif status == 'completed':
+        tasks = Todos.get_completed_tasks()
+    else:  # 'all'
+        tasks = Todos.get_all_tasks()
+
+    # Check if HTMX request
+    if request.headers.get('HX-Request'):
+        return render_template('todo_body.html', tasks=tasks)
+    return render_template('todo_index.html', tasks=tasks)
+
+# Keep the original routes for backward compatibility
 @app.route('/incomplete')
 def incomplete():
     tasks = Todos.get_incomplete_tasks()
-    return render_template('incomplete_tasks.html', tasks=tasks)
+    if request.headers.get('HX-Request'):
+        return render_template('todo_body.html', tasks=tasks)
+    return render_template('todo_index.html', tasks=tasks)
+
+@app.route('/completed')
+def completed():
+    tasks = Todos.get_completed_tasks()
+    if request.headers.get('HX-Request'):
+        return render_template('todo_body.html', tasks=tasks)
+    return render_template('todo_index.html', tasks=tasks)
+
+@app.route('/all-tasks')
+def all_tasks():
+    tasks = Todos.get_all_tasks()
+    if request.headers.get('HX-Request'):
+        return render_template('todo_body.html', tasks=tasks)
+    return render_template('todo_index.html', tasks=tasks)
