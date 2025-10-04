@@ -64,3 +64,15 @@ class Todos:
     @staticmethod
     def get_task_by_id(task_id):
         return Todo.query.get_or_404(task_id)
+
+    # In core/todo/todo.py - Add these methods to the Todos class
+
+    @staticmethod
+    def get_incomplete_tasks():
+        """Get all incomplete tasks."""
+        return Todo.query.filter_by(completion_time=None).order_by(Todo.date_created).all()
+
+    @staticmethod
+    def get_completed_tasks():
+        """Get all completed tasks."""
+        return Todo.query.filter(Todo.completion_time.isnot(None)).order_by(Todo.date_created).all()
