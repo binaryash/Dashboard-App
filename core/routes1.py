@@ -33,18 +33,13 @@ def delete(id):
     except:
         return 'cant delete'
 
-@app.route('/update/<int:id>', methods=['GET','POST'])
+@app.route('/update/<int:id>', methods=['POST'])
 def update(id):
-    task = Todos.get_task_by_id(id)
-
-    if request.method == 'POST':
-        try:
-            Todos.update_task(id, request.form['content'], request.form['completion_date'])
-            return redirect('/index')
-        except:
-            return 'issue in updating'
-    else:
-        return render_template('todo_update.html', task=task)
+    try:
+        Todos.update_task(id, request.form['content'], request.form['completion_date'])
+        return redirect('/index')
+    except:
+        return 'issue in updating'
 
 @app.route('/filter-tasks', methods=['GET'])
 def filter_tasks():
@@ -81,6 +76,18 @@ def completed():
 @app.route('/all-tasks')
 def all_tasks():
     tasks = Todos.get_all_tasks()
+    if request.headers.get('HX-Request'):
+        return render_template('todo_body.html', tasks=tasks)
+    return render_template('todo_index.html', tasks=tasks)
+
+@app.route('/search-tasks', methods=['GET'])
+def search_tasks():
+    """Search tasks based on query"""
+    query = request.args.get('q', '').strip()
+
+    tasks = Todos.search_tasks(query)
+
+    # Check if HTMX request
     if request.headers.get('HX-Request'):
         return render_template('todo_body.html', tasks=tasks)
     return render_template('todo_index.html', tasks=tasks)

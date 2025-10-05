@@ -1,15 +1,15 @@
 {% extends 'layout.html' %}
 
 {% block feed_body %}
-<div x-data="{ showModal: false }" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+<div x-data="{ showModal: false, showUpdateModal: false, updateTask: {} }" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header with Add Task button -->
   <div class="mb-6 flex items-center justify-between">
     <div>
-      <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">Task Master</h1>
+      <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">TODO List</h1>
       <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Manage your tasks efficiently</p>
     </div>
     <button @click="showModal = true" type="button" class="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
-      Add Task
+      Add Todo
     </button>
   </div>
 
@@ -28,7 +28,7 @@
           hx-include="this"
           name="status"
           class="w-full appearance-none rounded-md bg-white px-3 py-2 pr-8 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600">
-          <option value="all">All Tasks</option>
+          <option value="all">All Todo</option>
           <option value="incomplete">Incomplete</option>
           <option value="completed">Completed</option>
         </select>
@@ -42,7 +42,15 @@
         <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-        <input type="search" placeholder="Search..." class="w-full rounded-md bg-white py-2 pl-9 pr-3 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600" />
+        <input
+          type="search"
+          name="q"
+          placeholder="Search tasks..."
+          hx-get="/search-tasks"
+          hx-trigger="keyup changed delay:300ms"
+          hx-target="#task-table-body"
+          hx-swap="innerHTML"
+          class="w-full rounded-md bg-white py-2 pl-9 pr-3 text-sm ring-1 ring-zinc-300 focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-900 dark:ring-zinc-700 dark:focus:ring-zinc-600" />
       </div>
 
       <!-- Date -->
@@ -57,7 +65,7 @@
         <thead class="bg-zinc-50 dark:bg-zinc-800/50">
           <tr class="text-left text-xs uppercase text-zinc-500 dark:text-zinc-400">
             <th class="px-4 py-3 font-medium">#</th>
-            <th class="px-4 py-3 font-medium">Task</th>
+            <th class="px-4 py-3 font-medium">Todo</th>
             <th class="hidden px-4 py-3 font-medium sm:table-cell">Created</th>
             <th class="hidden px-4 py-3 font-medium md:table-cell">Completed</th>
             <th class="px-4 py-3 font-medium">Status</th>
@@ -75,15 +83,15 @@
             </td>
             <td class="px-4 py-3">
               {% if task.completion_time %}
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                  <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
-                  Done
-                </span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
+                Done
+              </span>
               {% else %}
-                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
-                  <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
-                  Pending
-                </span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+                <svg class="h-1.5 w-1.5 fill-current" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" /></svg>
+                Pending
+              </span>
               {% endif %}
             </td>
             <td class="px-4 py-3">
@@ -95,11 +103,11 @@
                   </svg>
                 </a>
                 {% endif %}
-                <a href="/update/{{task.id}}" class="rounded bg-zinc-100 p-1.5 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" title="Edit">
+                <button @click="showUpdateModal = true; updateTask = { id: {{ task.id }}, content: '{{ task.content|replace("'", "\\'") }}', completion_date: '{{ task.completion_date.strftime("%Y-%m-%d") if task.completion_date else "" }}' }" class="rounded bg-zinc-100 p-1.5 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" title="Edit">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                </a>
+                </button>
                 <a href="/delete/{{task.id}}" class="rounded bg-red-50 p-1.5 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20" title="Delete">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -129,7 +137,7 @@
           <div class="bg-white px-4 pb-4 pt-5 dark:bg-zinc-900 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
-                <h3 class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100">Add New Task</h3>
+                <h3 class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100">Add New Todo</h3>
                 <div class="mt-4">
                   <label for="content" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Task Description</label>
                   <textarea name="content" id="content" rows="4" required placeholder="Enter task description..." class="mt-2 block w-full rounded-md border-0 px-3 py-2 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-zinc-600 sm:text-sm sm:leading-6"></textarea>
@@ -139,9 +147,51 @@
           </div>
           <div class="bg-zinc-50 px-4 py-3 dark:bg-zinc-800/50 sm:flex sm:flex-row-reverse sm:px-6">
             <button type="submit" class="inline-flex w-full justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 sm:ml-3 sm:w-auto">
-              Add Task
+              Add Todo
             </button>
             <button @click="showModal = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-700 dark:hover:bg-zinc-800 sm:mt-0 sm:w-auto">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Task Modal -->
+  <div x-show="showUpdateModal" @keydown.escape.window="showUpdateModal = false" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+    <!-- Backdrop -->
+    <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+      <div @click="showUpdateModal = false" x-show="showUpdateModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity dark:bg-zinc-900 dark:bg-opacity-75"></div>
+
+      <span class="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+
+      <!-- Modal -->
+      <div x-show="showUpdateModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all dark:bg-zinc-900 sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+
+        <form :action="`/update/${updateTask.id}`" method="POST">
+          <div class="bg-white px-4 pb-4 pt-5 dark:bg-zinc-900 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <h3 class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100">Update Task</h3>
+                <div class="mt-4 space-y-4">
+                  <div>
+                    <label for="update-content" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Task Description</label>
+                    <textarea name="content" id="update-content" rows="4" required placeholder="Enter task description..." x-model="updateTask.content" class="mt-2 block w-full rounded-md border-0 px-3 py-2 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-zinc-600 sm:text-sm sm:leading-6"></textarea>
+                  </div>
+                  <div>
+                    <label for="update-completion-date" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Completion Date</label>
+                    <input type="date" name="completion_date" id="update-completion-date" x-model="updateTask.completion_date" class="mt-2 block w-full rounded-md border-0 px-3 py-2 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-zinc-600 sm:text-sm sm:leading-6" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-zinc-50 px-4 py-3 dark:bg-zinc-800/50 sm:flex sm:flex-row-reverse sm:px-6">
+            <button type="submit" class="inline-flex w-full justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 sm:ml-3 sm:w-auto">
+              Update Task
+            </button>
+            <button @click="showUpdateModal = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-700 dark:hover:bg-zinc-800 sm:mt-0 sm:w-auto">
               Cancel
             </button>
           </div>

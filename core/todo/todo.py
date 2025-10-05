@@ -76,3 +76,12 @@ class Todos:
     def get_completed_tasks():
         """Get all completed tasks."""
         return Todo.query.filter(Todo.completion_time.isnot(None)).order_by(Todo.date_created).all()
+
+
+    @staticmethod
+    def search_tasks(query):
+        """Search tasks by content."""
+        if not query:
+            return Todos.get_all_tasks()
+        search_pattern = f"%{query}%"
+        return Todo.query.filter(Todo.content.ilike(search_pattern)).order_by(Todo.date_created).all()
