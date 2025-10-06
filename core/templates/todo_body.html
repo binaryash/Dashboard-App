@@ -1,0 +1,39 @@
+<!-- templates/todo_body.html -->
+{% for task in tasks %}
+<tr class="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/50">
+  <td class="px-4 py-2 text-zinc-800 dark:text-zinc-200">{{ task.id }}</td>
+  <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">
+    <span class="line-clamp-2 break-words">{{ task.content }}</span>
+  </td>
+  <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">{{ task.date_created.date() }}</td>
+  <td class="px-4 py-2 text-zinc-700 dark:text-zinc-300">
+    {% if task.completion_date %}
+      {{ task.completion_date.strftime("%Y-%m-%d") }}
+    {% else %}
+      <span class="text-zinc-500">Not completed</span>
+    {% endif %}
+  </td>
+  <td class="px-4 py-2">
+    {% if task.completion_time %}
+      <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-800">Completed</span>
+    {% else %}
+      <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-800">Pending</span>
+    {% endif %}
+  </td>
+  <td class="px-4 py-2">
+    <div class="flex items-center justify-end gap-2">
+      <a href="/delete/{{task.id}}" class="inline-flex items-center rounded-md border border-red-300 bg-white px-2.5 py-1.5 text-xs font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-200 dark:border-red-700 dark:bg-zinc-900 dark:text-red-300 dark:hover:bg-red-900/30">
+        Delete
+      </a>
+      <a href="/update/{{task.id}}" class="inline-flex items-center rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800">
+        Update
+      </a>
+      {% if not task.completion_time %}
+      <a href="/complete/{{task.id}}" class="inline-flex items-center rounded-md border border-emerald-300 bg-white px-2.5 py-1.5 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300 dark:hover:bg-emerald-900/30">
+        Complete
+      </a>
+      {% endif %}
+    </div>
+  </td>
+</tr>
+{% endfor %}

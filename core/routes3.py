@@ -1,7 +1,7 @@
 import datetime
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-from app1 import app
+from core import app
 
 DATABASE = 'notes.db'
 

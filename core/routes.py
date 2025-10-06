@@ -1,8 +1,8 @@
 from flask import Flask, render_template, url_for, redirect, request
-from app1.feed_reader import get_feeds
-from app1 import app, db
-from app1.models import Todo
-from app1.datetime_1 import get_current_datetime
+from core.feed_reader import get_feeds
+from core import app, db
+from core.models import Todo
+from core.datetime_1 import get_current_datetime
 from openpyxl import Workbook, load_workbook
 from datetime import datetime as dt
 
