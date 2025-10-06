@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html data-bs-theme="dark" lang="en">
+<html class="dark" lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -82,56 +83,17 @@
 
   <!-- Interactions -->
   <script>
-    // Theme toggle: preserve data-bs-theme and also toggle Tailwind dark class
-    function toggleTheme() {
-      const root = document.documentElement;
-      const next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-bs-theme', next);
-      root.classList.toggle('dark', next === 'dark');
-    }
-    document.getElementById('btnSwitch')?.addEventListener('click', toggleTheme);
-    document.getElementById('btnSwitchMobile')?.addEventListener('click', toggleTheme);
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+  }
+  
+  document.getElementById('btnSwitch')?.addEventListener('click', toggleTheme);
+  document.getElementById('btnSwitchMobile')?.addEventListener('click', toggleTheme);
 
-    // Desktop dropdown (Other) — shadcn-like popover behavior
-    const trigger = document.getElementById('otherTrigger');
-    const menu = document.getElementById('otherMenu');
-    function openMenu() {
-      if (!menu) return;
-      menu.classList.remove('invisible');
-      menu.classList.remove('opacity-0');
-      menu.classList.remove('translate-y-1');
-      menu.classList.remove('pointer-events-none');
-      trigger?.setAttribute('aria-expanded', 'true');
-    }
-    function closeMenu() {
-      if (!menu) return;
-      menu.classList.add('invisible');
-      menu.classList.add('opacity-0');
-      menu.classList.add('translate-y-1');
-      menu.classList.add('pointer-events-none');
-      trigger?.setAttribute('aria-expanded', 'false');
-    }
-    let opened = false;
-    trigger?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      opened ? closeMenu() : openMenu();
-      opened = !opened;
-    });
-    document.addEventListener('click', (e) => {
-      if (!trigger || !menu) return;
-      if (!trigger.contains(e.target) && !menu.contains(e.target) && opened) {
-        closeMenu();
-        opened = false;
-      }
-    });
-
-    // Mobile menu
-    const mobileToggle = document.getElementById('mobileToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    mobileToggle?.addEventListener('click', () => {
-      const hidden = mobileMenu?.classList.toggle('hidden');
-      mobileToggle?.setAttribute('aria-expanded', hidden ? 'false' : 'true');
-    });
-  </script>
+  // Mobile menu toggle
+  document.getElementById('mobileToggle')?.addEventListener('click', () => {
+    document.getElementById('mobileMenu')?.classList.toggle('hidden');
+  });
+</script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 export default {
   content: ["./templates/**/*.html"],
-  darkMode: ['selector', '[data-bs-theme="dark"]'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
