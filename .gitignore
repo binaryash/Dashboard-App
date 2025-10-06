@@ -93,3 +93,31 @@ ENV/
 # Documentation
 
 docs/
+
+# Node modules (from npm install tailwindcss)
+node_modules/
+
+# Package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated CSS output (rebuild from input.css)
+static/css/output.css
+core/static/css/output.css
+
+# Optional: Keep input.css but ignore output
+# static/css/*.min.css
+
+# Tailwind standalone CLI executable (if using)
+tailwindcss
+tailwindcss.exe
+tailwindcss-*
+
+# npm debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build cache
+.cache/

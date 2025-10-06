@@ -7,34 +7,7 @@
   <!-- Keep local styles if needed -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-  <!-- Tailwind Play CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Shadcn-like neutral palette and dark mode support via class or data attribute
-    tailwind.config = {
-      darkMode: ['class', '[data-bs-theme="dark"]'],
-      theme: {
-        extend: {
-          colors: {
-            border: '#e4e4e7',         // zinc-200
-            bgCard: '#ffffff',         // white
-            bgSoft: '#f8fafc',         // slate-50
-            fgMuted: '#71717a',        // zinc-500
-            fg: '#18181b',             // zinc-900
-          },
-          ringColor: ({ theme }) => ({
-            DEFAULT: theme('colors.zinc.400'),
-          }),
-          boxShadow: {
-            subtle: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 1px -1px rgb(0 0 0 / 0.08)',
-          },
-          transitionTimingFunction: {
-            smooth: 'cubic-bezier(.2,.8,.2,1)',
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
