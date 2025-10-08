@@ -16,3 +16,7 @@
 @theme inline {
   --color-ring: var(--color-zinc-400);
 }
+
+[x-cloak] {
+  display: none !important;
+}

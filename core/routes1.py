@@ -13,33 +13,52 @@ def index():
         task_content = request.form['content']
         try:
             Todos.create_task(task_content)
+            # ADD THIS: Check for HTMX request
+            if request.headers.get('HX-Request'):
+                tasks = Todos.get_all_tasks()
+                return render_template('todo_body.html', tasks=tasks)
             return redirect('/index')
-        except:
-            return 'There was an issue with adding your task'
+        except Exception as e:
+            return f'There was an issue with adding your task: {str(e)}', 500
     else:
         tasks = Todos.get_all_tasks()
         return render_template('todo_index.html', tasks=tasks)
 
 @app.route('/complete/<int:id>')
 def complete(id):
-    Todos.mark_task_complete(id)
-    return redirect('/index')
+    try:
+        Todos.mark_task_complete(id)
+        # ADD THIS: Check for HTMX request
+        if request.headers.get('HX-Request'):
+            tasks = Todos.get_all_tasks()
+            return render_template('todo_body.html', tasks=tasks)
+        return redirect('/index')
+    except Exception as e:
+        return f'Error completing task: {str(e)}', 500
 
 @app.route('/delete/<int:id>')
 def delete(id):
     try:
         Todos.delete_task(id)
+        # ADD THIS: Check for HTMX request
+        if request.headers.get('HX-Request'):
+            tasks = Todos.get_all_tasks()
+            return render_template('todo_body.html', tasks=tasks)
         return redirect('/index')
-    except:
-        return 'cant delete'
+    except Exception as e:
+        return f'Error deleting task: {str(e)}', 500
 
 @app.route('/update/<int:id>', methods=['POST'])
 def update(id):
     try:
-        Todos.update_task(id, request.form['content'], request.form['completion_date'])
+        Todos.update_task(id, request.form['content'], request.form.get('completion_date', ''))
+        # ADD THIS: Check for HTMX request
+        if request.headers.get('HX-Request'):
+            tasks = Todos.get_all_tasks()
+            return render_template('todo_body.html', tasks=tasks)
         return redirect('/index')
-    except:
-        return 'issue in updating'
+    except Exception as e:
+        return f'Error updating task: {str(e)}', 500
 
 @app.route('/filter-tasks', methods=['GET'])
 def filter_tasks():
@@ -91,3 +110,20 @@ def search_tasks():
     if request.headers.get('HX-Request'):
         return render_template('todo_body.html', tasks=tasks)
     return render_template('todo_index.html', tasks=tasks)
+
+
+@app.route('/update-task', methods=['POST'])
+def update_task():
+    try:
+        task_id = request.form.get('task_id')
+        content = request.form.get('content')
+        completion_date = request.form.get('completion_date', '')
+
+        Todos.update_task(int(task_id), content, completion_date)
+
+        if request.headers.get('HX-Request'):
+            tasks = Todos.get_all_tasks()
+            return render_template('todo_body.html', tasks=tasks)
+        return redirect('/index')
+    except Exception as e:
+        return f'Error updating task: {str(e)}', 500
