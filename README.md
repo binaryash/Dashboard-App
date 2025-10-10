@@ -1,7 +1,7 @@
 # Dashboard App
 
 A minimal and efficient productivity dashboard built with **Flask**, **Tailwind CSS**, **HTMX**, and **Alpine.js**. It includes task management, news updates, notes, scheduling, reminders, and theme customization.
-
+.
 ## Features
 
 * 📰 News via RSS feeds
