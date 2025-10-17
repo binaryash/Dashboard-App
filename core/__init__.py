@@ -15,5 +15,4 @@ migrate = Migrate(app, db)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 from core.routes import routes
 from core.routes import todo_routes
-from core.routes import routes2
 from core.routes import routes3
