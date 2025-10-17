@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Keep local styles if needed -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='output.css') }}">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@300&family=Pathway+Extreme&family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:border-zinc-800/70 dark:bg-zinc-950/50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-14 items-center justify-between">
+        <!-- Brand -->
+        <a href="{{ url_for('home') }}" class="text-[15px] font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          DashBoard
+        </a>
+
+        <!-- Desktop nav -->
+        <ul class="hidden items-center gap-5 md:flex">
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('home') }}">HOME</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('feeds') }}">NEWS</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('index') }}">TODO</a></li>
+          <li><a class="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors" href="{{ url_for('event_home') }}">EVENTS</a></li>
+
+          <!-- Theme toggle -->
+          <li>
+            <button class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-subtle hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              type="button" id="btnSwitch">
+              Toggle Theme
+            </button>
+          </li>
+        </ul>
+
+        <!-- Mobile controls -->
+        <div class="flex items-center gap-2 md:hidden">
+          <button class="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-subtle hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  type="button" id="btnSwitchMobile">Theme</button>
+          <button id="mobileToggle" type="button" aria-controls="mobileMenu" aria-expanded="false"
+                  class="inline-flex items-center justify-center rounded-md p-2 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16m0 6H4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="hidden border-t border-zinc-200 py-3 dark:border-zinc-800 md:hidden">
+        <div class="flex flex-col gap-1">
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('home') }}">HOME</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('feeds') }}">NEWS</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('index') }}">TODO</a>
+          <a class="rounded-md px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800" href="{{ url_for('event_home') }}">EVENTS</a>
+          <details class="group px-1">
+          </details>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <div class="feed_body1">
+      <div class="feed_body">
+        {% block feed_body %}{% endblock %}
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactions -->
+  <script>
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+  }
+  
+  document.getElementById('btnSwitch')?.addEventListener('click', toggleTheme);
+  document.getElementById('btnSwitchMobile')?.addEventListener('click', toggleTheme);
+
+  // Mobile menu toggle
+  document.getElementById('mobileToggle')?.addEventListener('click', () => {
+    document.getElementById('mobileMenu')?.classList.toggle('hidden');
+  });
+</script>
+</body>
+</html>

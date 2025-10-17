@@ -1,0 +1,18 @@
+{
+  "name": "dashboard-app",
+  "version": "1.0.0",
+  "description": "The Dashboard App is a comprehensive solution for enhancing productivity and organization. Developed using Flask, HTML, CSS, and JavaScript, it offers a range of features including news updates, task management, note access, event scheduling, automated reminders, and customizable dark/light modes.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.1.14"
+  }
+}

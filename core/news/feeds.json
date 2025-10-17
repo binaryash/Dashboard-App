@@ -1,0 +1,40 @@
+{
+  "feeds": [
+    {
+      "name": "National News",
+      "url": "https://www.thehindu.com/news/national/feeder/default.rss",
+      "source": "The Hindu",
+      "type": "National",
+      "categories": ["Politics", "Government", "India"]
+    },
+    {
+      "name": "International News",
+      "url": "https://www.thehindu.com/news/international/feeder/default.rss",
+      "source": "The Hindu",
+      "type": "International",
+      "categories": ["World News", "Global Affairs"]
+    },
+    {
+      "name": "Business News",
+      "url": "https://www.thehindu.com/business/feeder/default.rss",
+      "source": "The Hindu",
+      "type": "Business",
+      "categories": ["Economy", "Finance", "Markets"]
+    },
+    {
+      "name": "Sports News",
+      "url": "https://www.thehindu.com/sport/feeder/default.rss",
+      "source": "The Hindu",
+      "type": "Sports",
+      "categories": []
+    },
+    {
+      "name": "Top News",
+      "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+      "source": "Times of India",
+      "type": "Sports",
+      "categories": []
+    }
+
+  ]
+}

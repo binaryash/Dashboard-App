@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+{% block feed_body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Notes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Typography plugin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.2.0/dist/typography.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-bs-theme="dark"]'],
+    }
+  </script>
+</head>
+<body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8"
+       x-data="{
+         viewDate: '{{ selected_date or '' }}',
+         createDate: '',
+         showMessage: {{ 'true' if message else 'false' }},
+         messageText: '{{ message or '' }}',
+         init() {
+           const today = new Date().toISOString().split('T')[0];
+           if (!this.viewDate) this.viewDate = today;
+           this.createDate = today;
+         }
+       }">
+
+    <!-- Success Message -->
+    <div x-show="showMessage"
+         x-transition
+         @htmx:after-swap.window="showMessage = true; setTimeout(() => showMessage = false, 3000)"
+         class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+      <p class="text-sm text-green-800 dark:text-green-200" x-text="messageText"></p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left column -->
+      <div class="lg:col-span-1 space-y-6">
+
+        <!-- View Notes Form with HTMX -->
+        <div class="rounded-md border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <h1 class="text-base font-semibold tracking-tight mb-4">View Notes</h1>
+          <form hx-post="/view_notes"
+                hx-target="#notes-container"
+                hx-swap="innerHTML"
+                hx-indicator="#view-spinner"
+                class="space-y-4">
+            <div>
+              <label for="view-date" class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-1">
+                Select Date
+              </label>
+              <input
+                type="date"
+                id="view-date"
+                name="date"
+                x-model="viewDate"
+                required
+                class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100" />
+            </div>
+            <button
+              type="submit"
+              class="inline-flex items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900">
+              <span>View Notes</span>
+              <svg id="view-spinner" class="htmx-indicator ml-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Create Note Form with HTMX -->
+        <div class="rounded-md border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <h1 class="text-base font-semibold tracking-tight mb-4">Create Note</h1>
+          <form hx-post="/create_note"
+                hx-target="#notes-container"
+                hx-swap="innerHTML"
+                hx-indicator="#create-spinner"
+                @htmx:after-request="if($event.detail.successful) { $el.reset(); createDate = new Date().toISOString().split('T')[0]; messageText = 'Note created successfully!'; showMessage = true; setTimeout(() => showMessage = false, 3000); }"
+                class="space-y-4">
+            <div>
+              <label for="create-date" class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-1">
+                Select Date
+              </label>
+              <input
+                type="date"
+                id="create-date"
+                name="date"
+                x-model="createDate"
+                required
+                class="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100" />
+            </div>
+            <div>
+              <label for="note" class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-1">
+                Note
+              </label>
+              <textarea
+                name="note"
+                id="note"
+                rows="4"
+                required
+                placeholder="Write your note here..."
+                class="mt-1 block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 placeholder:text-zinc-400"></textarea>
+            </div>
+            <button
+              type="submit"
+              class="inline-flex items-center rounded-md bg-zinc-900 px-4 py-2 text-sm text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-zinc-300">
+              <span>Create Note</span>
+              <svg id="create-spinner" class="htmx-indicator ml-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right column - Notes Display -->
+      <div class="lg:col-span-2">
+        <div class="rounded-md border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <h1 class="text-base font-semibold tracking-tight mb-4">Notes</h1>
+
+          <div id="notes-container">
+            {% if notes %}
+              {% include 'notes_list.html' %}
+            {% else %}
+              <p class="text-sm text-zinc-500 dark:text-zinc-400">Select a date to view notes</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .htmx-indicator {
+      display: none;
+    }
+    .htmx-request .htmx-indicator {
+      display: inline;
+    }
+    .htmx-request.htmx-indicator {
+      display: inline;
+    }
+  </style>
+</body>
+</html>
+{% endblock %}

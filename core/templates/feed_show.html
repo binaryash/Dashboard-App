@@ -1,0 +1,236 @@
+{% extends "layout.html" %} {% block feed_body %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/news/styles.css') }}"
+/>
+
+<div class="min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header Section -->
+    <header class="mb-12">
+      <h1
+        class="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 tracking-tight"
+      >
+        Dashboard
+      </h1>
+      <p class="text-base text-zinc-600 dark:text-zinc-300">
+        Stay updated with the latest news and articles
+      </p>
+    </header>
+
+    <!-- Feed Grid -->
+    <div
+      id="feed-container"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+    >
+      {% for entry in entries %}
+      <article
+        class="group relative bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl transition-all duration-300 ease-in-out hover:-translate-y-2 flex flex-col"
+      >
+        <!-- Image Container -->
+        <div class="relative h-48 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <img
+            src="{{ entry.image_url }}"
+            alt="{{ entry.title }}"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onerror="this.src='https://placehold.co/600x300/18181b/52525b?text=No+Image'"
+            loading="lazy"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent opacity-60"
+          ></div>
+        </div>
+
+        <!-- Content Container -->
+        <div class="p-6 space-y-4 flex flex-col flex-grow">
+          <!-- Badges Row -->
+          <div class="flex flex-wrap gap-2">
+            {% if entry.source %}
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-400/30"
+            >
+              {{ entry.source }}
+            </span>
+            {% endif %} {% if entry.feed_name %}
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-cyan-50 text-cyan-700 ring-1 ring-inset ring-cyan-700/10 dark:bg-cyan-500/10 dark:text-cyan-300 dark:ring-cyan-400/30"
+            >
+              {{ entry.feed_name }}
+            </span>
+            {% endif %}
+          </div>
+
+          <!-- Categories -->
+          {% if entry.categories %}
+          <div class="flex flex-wrap gap-2">
+            {% for category in entry.categories %}
+            <span
+              class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-700/10 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-400/30"
+            >
+              {{ category }}
+            </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Title -->
+          <h2
+            class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+          >
+            {{ entry.title }}
+          </h2>
+
+          <!-- Summary -->
+          {% if entry.summary %}
+          <p
+            class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3"
+          >
+            {{ entry.summary | striptags }}
+          </p>
+          {% endif %}
+
+          <!-- Read Button -->
+          {% if entry.link %}
+          <a
+            href="{{ entry.link }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 active:scale-95 transition-all mt-auto"
+          >
+            Read Article
+            <svg
+              class="ml-2 w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              ></path>
+            </svg>
+          </a>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination Component -->
+    {% if total_pages > 1 %}
+    <nav
+      class="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 pt-8"
+      aria-label="Pagination"
+    >
+      <!-- Previous Button -->
+      <div class="flex-1 flex justify-start">
+        {% if has_prev %}
+        <a
+          href="?page={{ page - 1 }}"
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 transition-all"
+        >
+          <svg
+            class="mr-2 w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+          Previous
+        </a>
+        {% else %}
+        <button
+          disabled
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-600 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg cursor-not-allowed"
+        >
+          <svg
+            class="mr-2 w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+          Previous
+        </button>
+        {% endif %}
+      </div>
+
+      <!-- Page Info -->
+      <div class="flex-1 flex justify-center">
+        <span
+          class="inline-flex items-center px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300"
+        >
+          Page
+          <span class="mx-2 font-semibold text-zinc-900 dark:text-zinc-100"
+            >{{ page }}</span
+          >
+          of
+          <span class="mx-2 font-semibold text-zinc-900 dark:text-zinc-100"
+            >{{ total_pages }}</span
+          >
+        </span>
+      </div>
+
+      <!-- Next Button -->
+      <div class="flex-1 flex justify-end">
+        {% if has_next %}
+        <a
+          href="?page={{ page + 1 }}"
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 transition-all"
+        >
+          Next
+          <svg
+            class="ml-2 w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </a>
+        {% else %}
+        <button
+          disabled
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-600 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 rounded-lg cursor-not-allowed"
+        >
+          Next
+          <svg
+            class="ml-2 w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
+        {% endif %}
+      </div>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
