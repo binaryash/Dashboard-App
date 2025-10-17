@@ -1,7 +1,7 @@
 """Routes for TODOs."""
 
 from flask import Flask, render_template, url_for, redirect, request
-from core.feed_reader import get_feeds
+from core.news.feed_reader import get_feeds
 from core import app, db
 from core.models import Todo
 from core.datetime_1 import get_current_datetime

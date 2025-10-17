@@ -1,11 +1,59 @@
 {% extends "layout.html" %}
 {% block feed_body %}
-<h1 class="display-3 feed_title">These are the RSS Feeds</h1>
+<div class="mx-auto max-w-7xl px-6 py-16">
+  <h1 class="text-3xl font-bold text-zinc-100 mb-10">RSS Feeds</h1>
+  <div class="grid gap-6 sm:mt-8 lg:grid-cols-3 lg:grid-rows-2">
     {% for entry in entries %}
-        <div class="feed_entry1">
-            <h2>{{ entry.title }}</h2>
-            <br>
-            <p>{{ entry.summary }}</p>
+      <div class="relative flex flex-col overflow-hidden rounded-2xl shadow-lg border border-zinc-800 bg-zinc-900 min-h-[220px] group">
+        {# Card image + fallback #}
+        <div class="flex items-start gap-4 p-4">
+          {% if entry.image_url %}
+            <img src="{{ entry.image_url }}" alt="{{ entry.title }}"
+                 class="w-14 h-14 object-cover object-center rounded-xl border border-zinc-800 bg-zinc-800 flex-shrink-0" />
+          {% else %}
+            <div class="w-14 h-14 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 flex-shrink-0">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M8 17l4-4 4 4" />
+                <path d="M8 7h.01" />
+              </svg>
+            </div>
+          {% endif %}
+          <div class="flex-1 flex flex-col min-h-[120px]">
+            <div class="flex flex-wrap gap-2 mb-2">
+              {% if entry.source %}
+                <span class="bg-blue-500/10 text-blue-400 rounded-full px-2 py-0.5 text-xs font-semibold">{{ entry.source }}</span>
+              {% endif %}
+              {% if entry.feed_name %}
+                <span class="bg-cyan-500/10 text-cyan-400 rounded-full px-2 py-0.5 text-xs font-semibold">{{ entry.feed_name }}</span>
+              {% endif %}
+              {% if entry.type %}
+                <span class="bg-zinc-800 text-zinc-300 rounded-full px-2 py-0.5 text-xs font-medium">{{ entry.type }}</span>
+              {% endif %}
+              {% if entry.categories %}
+                {% for category in entry.categories %}
+                  <span class="bg-green-500/10 text-green-400 rounded-full px-2 py-0.5 text-xs font-semibold">{{ category }}</span>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <div class="font-bold text-base text-zinc-100 mb-1">
+              {{ entry.title }}
+            </div>
+            <p class="text-zinc-300 text-sm mb-4">{{ entry.summary | striptags }}</p>
+            {% if entry.link %}
+              <a href="{{ entry.link }}" target="_blank"
+                 class="inline-flex items-center rounded bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-900 hover:bg-zinc-200 transition">
+                 Read More
+                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-1">
+                     <path d="M5 12h14"/>
+                     <path d="m12 5 7 7-7 7"/>
+                 </svg>
+              </a>
+            {% endif %}
+          </div>
         </div>
+      </div>
     {% endfor %}
+  </div>
+</div>
 {% endblock %}

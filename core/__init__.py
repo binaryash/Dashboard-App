@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-from core.feed_reader import get_feeds
+from core.news.feed_reader import get_feeds
 from datetime import datetime
 from core.datetime_1 import get_current_datetime
 
@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
-from core import routes
-from core import routes1
-from core import routes2
-from core import routes3
+from core.routes import routes
+from core.routes import todo_routes
+from core.routes import routes2
+from core.routes import routes3
