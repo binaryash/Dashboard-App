@@ -14,5 +14,7 @@ def home():
 
 @app.route("/feeds")
 def feeds():
-    entries = get_feeds()
-    return render_template("feed_show.html", entries=entries)
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 9, type=int)
+    feed_data = get_feeds(page=page, per_page=per_page)
+    return render_template("feed_show.html", **feed_data)

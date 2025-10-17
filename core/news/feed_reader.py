@@ -3,7 +3,7 @@ import json
 import os
 
 
-def get_feeds():
+def get_feeds(page=1, per_page=9):
     # Get the directory of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -58,7 +58,25 @@ def get_feeds():
                 if img_match:
                     image_url = img_match.group(1)
 
-            entry["image_url"] = image_url
+            # Set placeholder if no image found
+            entry["image_url"] = image_url if image_url else "https://placehold.co/600x300"
             all_entries.append(entry)
 
-    return all_entries
+    # Calculate pagination
+    total_entries = len(all_entries)
+    total_pages = (total_entries + per_page - 1) // per_page  # Ceiling division
+
+    # Get the current page's entries
+    start_idx = (page - 1) * per_page
+    end_idx = start_idx + per_page
+    paginated_entries = all_entries[start_idx:end_idx]
+
+    return {
+        "entries": paginated_entries,
+        "page": page,
+        "per_page": per_page,
+        "total_entries": total_entries,
+        "total_pages": total_pages,
+        "has_prev": page > 1,
+        "has_next": page < total_pages
+    }

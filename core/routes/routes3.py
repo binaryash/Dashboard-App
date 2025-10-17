@@ -28,7 +28,7 @@ def insert_note_into_database(date, note):
 def get_notes_from_database(date):
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
-    c.execute("SELECT id, note FROM notes WHERE date=?", (date,))
+    c.execute("SELECT id, note FROM notes WHERE date=? ORDER BY id DESC", (date,))
     notes = [{"id": row[0], "note": row[1]} for row in c.fetchall()]
     conn.close()
     return notes
@@ -37,10 +37,12 @@ def get_notes_from_database(date):
 def get_note_from_database(note_id):
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
-    c.execute("SELECT note FROM notes WHERE id=?", (note_id,))
-    note = c.fetchone()
+    c.execute("SELECT note, date FROM notes WHERE id=?", (note_id,))
+    result = c.fetchone()
     conn.close()
-    return note[0] if note else None
+    if result:
+        return {"note": result[0], "date": result[1]}
+    return None
 
 
 def update_note_in_database(note_id, note):
@@ -54,55 +56,51 @@ def update_note_in_database(note_id, note):
 def delete_note_from_database(note_id):
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
+    # Get the date before deleting to return updated notes for that date
+    c.execute("SELECT date FROM notes WHERE id=?", (note_id,))
+    result = c.fetchone()
+    date = result[0] if result else None
+
     c.execute("DELETE FROM notes WHERE id=?", (note_id,))
     conn.commit()
     conn.close()
+    return date
 
 
 @app.route("/event")
 def event_home():
-    current_date = datetime.date.today()
-    year = current_date.year
-    month = current_date.month
-    day = current_date.day
-    return render_template("index.html", year=year, month=month, day=day)
+    create_database()
+    current_date = datetime.date.today().isoformat()
+    return render_template("index.html", selected_date=current_date)
 
 
 @app.route("/create_note", methods=["POST"])
 def create_note():
-    year = int(request.form["year"])
-    month = int(request.form["month"])
-    day = int(request.form["day"])
-    date = f"{year:04d}-{month:02d}-{day:02d}"
+    date = request.form["date"]
     note = request.form["note"]
 
-    create_database()  # Ensure the database and table exist
-
+    create_database()
     insert_note_into_database(date, note)
 
-    return redirect(url_for("event_home", message="Note created successfully!"))
+    # Return the updated notes list for the created date
+    notes = get_notes_from_database(date)
+    return render_template("notes_list.html", notes=notes)
 
 
 @app.route("/view_notes", methods=["POST"])
 def view_notes():
-    year = int(request.form["year"])
-    month = int(request.form["month"])
-    day = int(request.form["day"])
-    date = f"{year:04d}-{month:02d}-{day:02d}"
-
-    create_database()  # Ensure the database and table exist
-
+    date = request.form["date"]
+    create_database()
     notes = get_notes_from_database(date)
-
-    return render_template("index.html", year=year, month=month, day=day, notes=notes)
+    return render_template("notes_list.html", notes=notes)
 
 
 @app.route("/edit_note/<int:note_id>", methods=["GET", "POST"])
 def edit_note(note_id):
     if request.method == "GET":
-        note = get_note_from_database(note_id)
-        if note:
-            return render_template("edit_note.html", note_id=note_id, note=note)
+        note_data = get_note_from_database(note_id)
+        if note_data:
+            return render_template("edit_note.html", note_id=note_id, note=note_data["note"], date=note_data["date"])
         else:
             return redirect(url_for("event_home"))
     elif request.method == "POST":
@@ -111,7 +109,9 @@ def edit_note(note_id):
         return redirect(url_for("event_home", message="Note updated successfully!"))
 
 
-@app.route("/delete_note/<int:note_id>")
+@app.route("/delete_note/<int:note_id>", methods=["DELETE"])
 def delete_note(note_id):
-    delete_note_from_database(note_id)
-    return redirect(url_for("event_home", message="Note deleted successfully!"))
+    date = delete_note_from_database(note_id)
+    # Return updated notes list after deletion
+    notes = get_notes_from_database(date) if date else []
+    return render_template("notes_list.html", notes=notes)
