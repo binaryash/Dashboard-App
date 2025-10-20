@@ -1,0 +1,94 @@
+{% for entry in entries %}
+<article
+  class="group relative bg-white dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl transition-all duration-300 ease-in-out hover:-translate-y-2 flex flex-col"
+>
+  <!-- Image Container -->
+  <div class="relative h-48 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+    <img
+      src="{{ entry.image_url }}"
+      alt="{{ entry.title }}"
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      onerror="this.src='https://placehold.co/600x300/18181b/52525b?text=No+Image'"
+      loading="lazy"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent opacity-60"
+    ></div>
+  </div>
+
+  <!-- Content Container -->
+  <div class="p-6 space-y-4 flex flex-col flex-grow">
+    <!-- Badges Row -->
+    <div class="flex flex-wrap gap-2">
+      {% if entry.source %}
+      <span
+        class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-400/30"
+      >
+        {{ entry.source }}
+      </span>
+      {% endif %}
+      {% if entry.feed_name %}
+      <span
+        class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-cyan-50 text-cyan-700 ring-1 ring-inset ring-cyan-700/10 dark:bg-cyan-500/10 dark:text-cyan-300 dark:ring-cyan-400/30"
+      >
+        {{ entry.feed_name }}
+      </span>
+      {% endif %}
+    </div>
+
+    <!-- Categories -->
+    {% if entry.categories %}
+    <div class="flex flex-wrap gap-2">
+      {% for category in entry.categories %}
+      <span
+        class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-700/10 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-400/30"
+      >
+        {{ category }}
+      </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Title -->
+    <h2
+      class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+    >
+      {{ entry.title }}
+    </h2>
+
+    <!-- Summary -->
+    {% if entry.summary %}
+    <p
+      class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3"
+    >
+      {{ entry.summary | striptags }}
+    </p>
+    {% endif %}
+
+    <!-- Read Button -->
+    {% if entry.link %}
+    <a
+      href="{{ entry.link }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 active:scale-95 transition-all mt-auto"
+    >
+      Read Article
+      <svg
+        class="ml-2 w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+        ></path>
+      </svg>
+    </a>
+    {% endif %}
+  </div>
+</article>
+{% endfor %}

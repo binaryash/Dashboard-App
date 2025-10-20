@@ -1,22 +1,188 @@
-{% extends "layout.html" %} {% block feed_body %}
+{% extends "layout.html" %}
+{% block feed_body %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='styles/news/styles.css') }}"
 />
 
+<!-- Add HTMX and Alpine.js -->
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 <div class="min-h-screen">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Header Section -->
-    <header class="mb-12">
-      <h1
-        class="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 tracking-tight"
-      >
-        Dashboard
-      </h1>
-      <p class="text-base text-zinc-600 dark:text-zinc-300">
-        Stay updated with the latest news and articles
-      </p>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Minimal Header Section -->
+    <header class="mb-10">
+      <!-- Eyebrow Text -->
+      <div class="mb-3">
+        <span class="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          News Aggregator
+        </span>
+      </div>
+
+      <!-- Main Title & Stats Row -->
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-4">
+        <div>
+          <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-2">
+            Dashboard
+          </h1>
+          <p class="text-base text-zinc-500 dark:text-zinc-400">
+            Stay updated with the latest news and articles from trusted sources
+          </p>
+        </div>
+
+        <!-- Minimal Stats -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">{{ total_entries }}</div>
+            <div class="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mt-0.5">Articles</div>
+          </div>
+          <div class="w-px h-10 bg-zinc-200 dark:bg-zinc-800"></div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">{{ sources|length }}</div>
+            <div class="text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mt-0.5">Sources</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtle Divider -->
+      <div class="h-px bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800"></div>
     </header>
+
+    <!-- Filter Section -->
+    <div
+      x-data="{
+        source: '{{ current_source }}',
+        type: '{{ current_type }}',
+        category: '{{ current_category }}',
+        showFilters: false,
+        clearFilters() {
+          this.source = '';
+          this.type = '';
+          this.category = '';
+        },
+        hasActiveFilters() {
+          return this.source || this.type || this.category;
+        }
+      }"
+      class="mb-8"
+    >
+      <!-- Filter Toggle Button -->
+      <div class="flex items-center justify-between mb-4">
+        <button
+          @click="showFilters = !showFilters"
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+          </svg>
+          <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+          <span
+            x-show="hasActiveFilters()"
+            class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+            x-text="[source, type, category].filter(f => f).length"
+          ></span>
+        </button>
+
+        <button
+          @click="clearFilters()"
+          x-show="hasActiveFilters()"
+          class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Filter Form -->
+      <div
+        x-show="showFilters"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6"
+      >
+        <form
+          hx-get="/feeds/results"
+          hx-target="#feed-container"
+          hx-trigger="change, submit"
+          hx-include="[name='source'],[name='type'],[name='category']"
+          hx-indicator="#loading-indicator"
+          class="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          <!-- Source Filter -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              Source
+            </label>
+            <select
+              x-model="source"
+              name="source"
+              class="w-full px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-zinc-100 transition-all"
+            >
+              <option value="">All Sources</option>
+              {% for src in sources %}
+              <option value="{{ src }}">{{ src }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Type Filter -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              Type
+            </label>
+            <select
+              x-model="type"
+              name="type"
+              class="w-full px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-zinc-100 transition-all"
+            >
+              <option value="">All Types</option>
+              {% for t in types %}
+              <option value="{{ t }}">{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Category Filter -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              Category
+            </label>
+            <select
+              x-model="category"
+              name="category"
+              class="w-full px-4 py-2.5 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-zinc-100 transition-all"
+            >
+              <option value="">All Categories</option>
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div
+        id="loading-indicator"
+        class="htmx-indicator mt-4 flex items-center justify-center"
+      >
+        <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-700 dark:text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading feeds...
+        </div>
+      </div>
+    </div>
 
     <!-- Feed Grid -->
     <div
@@ -51,7 +217,8 @@
             >
               {{ entry.source }}
             </span>
-            {% endif %} {% if entry.feed_name %}
+            {% endif %}
+            {% if entry.feed_name %}
             <span
               class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-cyan-50 text-cyan-700 ring-1 ring-inset ring-cyan-700/10 dark:bg-cyan-500/10 dark:text-cyan-300 dark:ring-cyan-400/30"
             >
@@ -128,7 +295,7 @@
       <div class="flex-1 flex justify-start">
         {% if has_prev %}
         <a
-          href="?page={{ page - 1 }}"
+          href="?page={{ page - 1 }}&source={{ current_source }}&type={{ current_type }}&category={{ current_category }}"
           class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 transition-all"
         >
           <svg
@@ -189,7 +356,7 @@
       <div class="flex-1 flex justify-end">
         {% if has_next %}
         <a
-          href="?page={{ page + 1 }}"
+          href="?page={{ page + 1 }}&source={{ current_source }}&type={{ current_type }}&category={{ current_category }}"
           class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 transition-all"
         >
           Next
@@ -233,4 +400,17 @@
     {% endif %}
   </div>
 </div>
+
+<style>
+  .htmx-indicator {
+    display: none;
+  }
+  .htmx-request .htmx-indicator {
+    display: flex;
+  }
+  .htmx-request #feed-container {
+    opacity: 0.6;
+    transition: opacity 200ms ease-in;
+  }
+</style>
 {% endblock %}

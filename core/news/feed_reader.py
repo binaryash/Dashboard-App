@@ -3,7 +3,17 @@ import json
 import os
 
 
-def get_feeds(page=1, per_page=9):
+def get_feeds(page=1, per_page=9, source=None, feed_type=None, category=None):
+    """
+    Get feeds with optional filtering by source, type, and category
+
+    Args:
+        page: Current page number
+        per_page: Number of entries per page
+        source: Filter by source (e.g., "The Hindu", "Times of India")
+        feed_type: Filter by type (e.g., "National", "International", "Business", "Sports")
+        category: Filter by category (e.g., "Politics", "Economy", "World News")
+    """
     # Get the directory of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,6 +31,14 @@ def get_feeds(page=1, per_page=9):
         # Validate that source and type are present
         if not feed_info.get("source") or not feed_info.get("type"):
             raise ValueError(f"Feed must have both 'source' and 'type' fields")
+
+        # Apply filters at feed level
+        if source and feed_info["source"] != source:
+            continue
+        if feed_type and feed_info["type"] != feed_type:
+            continue
+        if category and category not in feed_info.get("categories", []):
+            continue
 
         # Parse the RSS feed
         feed = feedparser.parse(feed_info["url"])
@@ -79,4 +97,31 @@ def get_feeds(page=1, per_page=9):
         "total_pages": total_pages,
         "has_prev": page > 1,
         "has_next": page < total_pages
+    }
+
+
+def get_filter_options():
+    """
+    Get all available filter options from feeds.json
+    Returns dict with sources, types, and categories
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(script_dir, "feeds.json")
+
+    with open(json_path, "r") as f:
+        data = json.load(f)
+
+    sources = set()
+    types = set()
+    categories = set()
+
+    for feed_info in data["feeds"]:
+        sources.add(feed_info["source"])
+        types.add(feed_info["type"])
+        categories.update(feed_info.get("categories", []))
+
+    return {
+        "sources": sorted(list(sources)),
+        "types": sorted(list(types)),
+        "categories": sorted(list(categories))
     }
