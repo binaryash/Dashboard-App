@@ -77,7 +77,9 @@ def get_feeds(page=1, per_page=9, source=None, feed_type=None, category=None):
                     image_url = img_match.group(1)
 
             # Set placeholder if no image found
-            entry["image_url"] = image_url if image_url else "https://placehold.co/600x300"
+            entry["image_url"] = (
+                image_url if image_url else "https://placehold.co/600x300"
+            )
             all_entries.append(entry)
 
     # Calculate pagination
@@ -96,7 +98,7 @@ def get_feeds(page=1, per_page=9, source=None, feed_type=None, category=None):
         "total_entries": total_entries,
         "total_pages": total_pages,
         "has_prev": page > 1,
-        "has_next": page < total_pages
+        "has_next": page < total_pages,
     }
 
 
@@ -123,5 +125,5 @@ def get_filter_options():
     return {
         "sources": sorted(list(sources)),
         "types": sorted(list(types)),
-        "categories": sorted(list(categories))
+        "categories": sorted(list(categories)),
     }

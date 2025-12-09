@@ -1,15 +1,14 @@
-
 from core import db
 from core.models import Todo
 from datetime import datetime as dt
 from openpyxl import load_workbook
 
-class Todos:
 
+class Todos:
     @staticmethod
     def append_to_excel(content):
         try:
-            workbook = load_workbook('todos.xlsx')
+            workbook = load_workbook("todos.xlsx")
             sheet = workbook.active
             next_row = sheet.max_row + 1
             current_datetime = dt.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -17,9 +16,9 @@ class Todos:
             sheet.cell(row=next_row, column=1, value=content)
             sheet.cell(row=next_row, column=2, value=current_datetime)
 
-            workbook.save('todos.xlsx')
+            workbook.save("todos.xlsx")
         except Exception as e:
-            print('Error: Unable to append content to Excel file')
+            print("Error: Unable to append content to Excel file")
             print(e)
 
     @staticmethod
@@ -36,7 +35,9 @@ class Todos:
 
     @staticmethod
     def get_incomplete_tasks():
-        return Todo.query.filter_by(completion_time=None).order_by(Todo.date_created).all()
+        return (
+            Todo.query.filter_by(completion_time=None).order_by(Todo.date_created).all()
+        )
 
     @staticmethod
     def mark_task_complete(task_id):
@@ -57,7 +58,9 @@ class Todos:
     def update_task(task_id, content, completion_date):
         task = Todo.query.get_or_404(task_id)
         task.content = content
-        task.completion_date = dt.strptime(completion_date, '%Y-%m-%d').date() if completion_date else None
+        task.completion_date = (
+            dt.strptime(completion_date, "%Y-%m-%d").date() if completion_date else None
+        )
         db.session.commit()
         return task
 
@@ -70,13 +73,18 @@ class Todos:
     @staticmethod
     def get_incomplete_tasks():
         """Get all incomplete tasks."""
-        return Todo.query.filter_by(completion_time=None).order_by(Todo.date_created).all()
+        return (
+            Todo.query.filter_by(completion_time=None).order_by(Todo.date_created).all()
+        )
 
     @staticmethod
     def get_completed_tasks():
         """Get all completed tasks."""
-        return Todo.query.filter(Todo.completion_time.isnot(None)).order_by(Todo.date_created).all()
-
+        return (
+            Todo.query.filter(Todo.completion_time.isnot(None))
+            .order_by(Todo.date_created)
+            .all()
+        )
 
     @staticmethod
     def search_tasks(query):
@@ -84,4 +92,8 @@ class Todos:
         if not query:
             return Todos.get_all_tasks()
         search_pattern = f"%{query}%"
-        return Todo.query.filter(Todo.content.ilike(search_pattern)).order_by(Todo.date_created).all()
+        return (
+            Todo.query.filter(Todo.content.ilike(search_pattern))
+            .order_by(Todo.date_created)
+            .all()
+        )

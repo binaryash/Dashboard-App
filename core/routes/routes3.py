@@ -1,3 +1,19 @@
+"""
+Flask application for managing notes associated with specific dates.
+
+This file contains routes and functions for:
+- Creating and managing a SQLite database (`notes.db`)
+- Adding, viewing, editing, and deleting notes for specific dates
+- Rendering corresponding HTML templates for each action
+
+Key Routes:
+- `/event`: Displays the event home page for the current date.
+- `/create_note`: Adds a new note for a given date.
+- `/view_notes`: Displays notes for a specified date.
+- `/edit_note/<note_id>`: Allows editing of a specific note.
+- `/delete_note/<note_id>`: Deletes a specific note and updates the notes list.
+"""
+
 import datetime
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
@@ -100,7 +116,12 @@ def edit_note(note_id):
     if request.method == "GET":
         note_data = get_note_from_database(note_id)
         if note_data:
-            return render_template("edit_note.html", note_id=note_id, note=note_data["note"], date=note_data["date"])
+            return render_template(
+                "edit_note.html",
+                note_id=note_id,
+                note=note_data["note"],
+                date=note_data["date"],
+            )
         else:
             return redirect(url_for("event_home"))
     elif request.method == "POST":

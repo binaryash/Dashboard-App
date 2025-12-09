@@ -12,11 +12,11 @@ from google import genai
 from google.genai import types
 from core.constants import GEMINI_API_KEY
 
+
 class GeminiService:
     """Service class to handle Gemini API interactions for summarization."""
 
     def __init__(self):
-
         api_key = GEMINI_API_KEY
         if not api_key:
             raise ValueError("GEMINI_API_KEY not found in .env file")
@@ -55,7 +55,7 @@ class GeminiService:
                 config=types.GenerateContentConfig(
                     temperature=0.3,  # Lower temperature for more focused summaries
                     max_output_tokens=500,
-                )
+                ),
             )
 
             return response.text.strip()
@@ -66,6 +66,7 @@ class GeminiService:
 
 # Singleton instance
 _gemini_service = None
+
 
 def get_gemini_service() -> GeminiService:
     """Get or create GeminiService singleton instance."""
