@@ -126,3 +126,24 @@ yarn-error.log*
 #feeds file
 
 feeds.json
+
+
+# UV related
+#
+# Ignore uv package manager's specific data
+.uv/
+.uv-lock.json
+node_modules/
+
+# Ignore any temporary or build files
+dist/
+build/
+*.log
+*.tmp
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore environment files (optional)
+.env
